@@ -1,0 +1,18 @@
+{
+  "primary": "#0275d8",
+  "success": "#5cb85c",
+  "info": "#5bc0de",
+  "warning": "#f0ad4e",
+  "danger": "#d9534f",
+  "black": "#000000",
+  "gray": "#878787",
+  "darkGray": "#202020",
+  "white": "#ffffff",
+  "textLoginTitle": "##6ab6e7",
+  "mainColor": "#FF7A7A",
+  "card": "#DDDDDD",
+  "progressing": "#FFAA46",
+  "done": "#5FC222",
+  "lightGray": "#F6F6F6",
+  "lightGrayDarker": "#e8e9ea"
+}
