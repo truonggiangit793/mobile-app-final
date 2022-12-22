@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import {
   Text,
   View,
@@ -6,24 +6,57 @@ import {
   TextInput,
   TouchableHighlight,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import Header from '../components/Header';
 import SafeView from '../components/SafeView';
 import Colors from '../assets/color.json';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import Loading from '../components/Loading';
+import {AuthContext} from '../redux/provider';
+import {API_URL} from '../configs/config';
+import axios from 'axios';
 
 export default function ({navigation}) {
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState('CK-PT9116');
-  const [email, setEmail] = useState('truonggiangit793@gmail.com');
-  const [role, setRole] = useState('STAFF');
-  const [fullName, setFullName] = useState('Pham Truong Giang');
-  const [phoneNumber, setPhoneNumber] = useState('0702907154');
+  const {token, user, setUser} = useContext(AuthContext);
+  const [account, setAccount] = useState(user.fullName);
+  const [email, setEmail] = useState(user.email);
+  const [fullName, setFullName] = useState(user.fullName);
+  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
+
+  const updateProfile = () => {
+    console.log('Request to update profile');
+    setIsLoading(true);
+    axios
+      .put(`${API_URL}/account/update-me?token=${token}`, {
+        email: email,
+        fullName: fullName,
+        phoneNumber: phoneNumber,
+      })
+      .then(res => {
+        setIsLoading(false);
+        if (res.data.status) {
+          setUser(res.data.data);
+          setAccount(res.data.data.fullName);
+          Alert.alert('Thành công!', res.data.msg.vn);
+        } else {
+          Alert.alert('Thất bại!', res.data.msg.vn);
+        }
+      })
+      .catch(e => {
+        setIsLoading(false);
+        Alert.alert('Thất bại', 'Có lỗi xảy ra, vui lòng thử lại.');
+        console.log(e);
+      });
+  };
+
   return (
     <View style={styles.container}>
-      <Header navigation={navigation} user="Giang" />
+      <Header navigation={navigation} user={account} />
       <SafeView>
+        <Loading isLoading={isLoading} />
         <Text
           style={{
             fontWeight: 'bold',
@@ -44,7 +77,7 @@ export default function ({navigation}) {
             <Text style={styles.label}>Tài khoản:</Text>
             <TextInput
               style={styles.input}
-              value={user}
+              value={user.userCode}
               placeholder="Tài khoản"
               editable={false}
               selectTextOnFocus={false}
@@ -60,7 +93,7 @@ export default function ({navigation}) {
             <Text style={styles.label}>Chức vụ:</Text>
             <TextInput
               style={styles.input}
-              value={role}
+              value={user.role}
               placeholder="Chức vụ"
               editable={false}
               selectTextOnFocus={false}
@@ -113,7 +146,7 @@ export default function ({navigation}) {
           </View>
           <View style={[styles.group, {marginVertical: 20}]}>
             <TouchableHighlight
-              onPress={() => {}}
+              onPress={updateProfile}
               underlayColor={Colors.white}
               activeOpacity={0.7}>
               <View style={styles.button}>

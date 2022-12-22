@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import {
   Text,
   View,
@@ -6,23 +6,57 @@ import {
   TextInput,
   TouchableHighlight,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import Header from '../components/Header';
 import SafeView from '../components/SafeView';
 import Colors from '../assets/color.json';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import {AuthContext} from '../redux/provider';
+import Loading from '../components/Loading';
+import axios from 'axios';
+import {API_URL} from '../configs/config';
 
 export default function ({navigation}) {
+  const {user, token, setToken} = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
 
+  const updatePassword = () => {
+    console.log('Request to change password');
+    setIsLoading(true);
+    axios
+      .put(`${API_URL}/account/change-password?token=${token}`, {
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+        repeatPassword: repeatPassword,
+      })
+      .then(res => {
+        setIsLoading(false);
+        if (res.data.status) {
+          Alert.alert('Thành công!', res.data.msg.vn);
+          setToken(res.data.token);
+          setOldPassword('');
+          setNewPassword('');
+          setRepeatPassword('');
+        } else {
+          Alert.alert('Thất bại!', res.data.msg.vn);
+        }
+      })
+      .catch(e => {
+        setIsLoading(false);
+        Alert.alert('Thất bại!', 'Có lỗi xảy ra, vui lòng thử lại.');
+        console.log(e);
+      });
+  };
+
   return (
     <View style={styles.container}>
-      <Header navigation={navigation} user="Giang" />
+      <Header navigation={navigation} user={user.fullName} />
       <SafeView>
+        <Loading isLoading={isLoading} />
         <Text
           style={{
             fontWeight: 'bold',
@@ -86,7 +120,7 @@ export default function ({navigation}) {
           </View>
           <View style={[styles.group, {marginVertical: 20}]}>
             <TouchableHighlight
-              onPress={() => {}}
+              onPress={updatePassword}
               underlayColor={Colors.white}
               activeOpacity={0.7}>
               <View style={styles.button}>

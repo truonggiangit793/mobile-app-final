@@ -1,6 +1,4 @@
-export const API_URL =
-  'https://mobile-api-service-production.up.railway.app/api/v1';
-// 'http://localhost:3000/api/v1';
+export const API_URL = 'http://192.168.1.2:8080/api/v1';
 
 export const navigationName = {
   home: 'Trang chủ',
