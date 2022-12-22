@@ -55,6 +55,8 @@ cd mobile-app-final
 yarn
 ```
 
+Chỉnh sửa địa chỉ IP của API Server ở **/src/configs/config.js**
+
 ## Khởi chạy ứng dụng
 
 Để chạy ứng dụng, trước tiên thực hiện lệnh sau:
